@@ -1,0 +1,41 @@
+version: '3.9'
+services:
+  pgsql:
+    image: postgres:alpine
+    container_name: pgsql
+    restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres321
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api:
+    image: elizelton/app-api:latest
+    container_name: api
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres321
+      POSTGRES_DB: postgres
+      POSTGRES_HOST: pgsql
+      SECRETJWT: KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA
+    ports:
+      - 3000:3000
+    depends_on:
+      - pgsql
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+
+  adminer:
+      image: adminer
+      container_name: adminer
+      ports:
+        - 8080:8080
+
+volumes:
+  postgres_data:
